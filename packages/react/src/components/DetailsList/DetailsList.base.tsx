@@ -460,7 +460,7 @@ const DetailsListInner: React.ComponentType<IDetailsListInnerProps> = (
     memoizeFunction((columns: IColumn[]) => {
       let totalWidth: number = 0;
 
-      columns.forEach((column: IColumn) => (totalWidth += column.calculatedWidth || column.minWidth));
+      columns.forEach((column: IColumn) => (totalWidth += column.calculatedWidth ?? column.minWidth));
 
       return totalWidth;
     }),
@@ -1248,9 +1248,9 @@ export class DetailsListBase extends React.Component<IDetailsListProps, IDetails
 
     newColumns.forEach((col: IColumn) => {
       if (skipViewportMeasures || !col.flexGrow) {
-        remainingWidth -= col.maxWidth || col.minWidth || MIN_COLUMN_WIDTH;
+        remainingWidth -= col.maxWidth ?? col.minWidth ?? MIN_COLUMN_WIDTH;
       } else {
-        remainingWidth -= col.minWidth || MIN_COLUMN_WIDTH;
+        remainingWidth -= col.minWidth ?? MIN_COLUMN_WIDTH;
         sumProportionalWidth += col.flexGrow;
       }
 
@@ -1295,9 +1295,9 @@ export class DetailsListBase extends React.Component<IDetailsListProps, IDetails
         if (!skipViewportMeasures && newColumn.flexGrow) {
           // Assigns the proportion of the remaining extra width after all columns have met minimum widths.
           newColumn.calculatedWidth = newColumn.minWidth + newColumn.flexGrow * widthFraction;
-          newColumn.calculatedWidth = Math.min(newColumn.calculatedWidth, newColumn.maxWidth || Number.MAX_VALUE);
+          newColumn.calculatedWidth = Math.min(newColumn.calculatedWidth, newColumn.maxWidth ?? Number.MAX_VALUE);
         } else {
-          newColumn.calculatedWidth = newColumn.maxWidth || newColumn.minWidth || MIN_COLUMN_WIDTH;
+          newColumn.calculatedWidth = newColumn.maxWidth ?? newColumn.minWidth ?? MIN_COLUMN_WIDTH;
         }
       }
 
@@ -1316,7 +1316,7 @@ export class DetailsListBase extends React.Component<IDetailsListProps, IDetails
     const adjustedColumns: IColumn[] = newColumns.map((column, i) => {
       const baseColumn = {
         ...column,
-        calculatedWidth: column.minWidth || MIN_COLUMN_WIDTH,
+        calculatedWidth: column.minWidth ?? MIN_COLUMN_WIDTH,
       };
 
       const newColumn = {
@@ -1339,7 +1339,7 @@ export class DetailsListBase extends React.Component<IDetailsListProps, IDetails
     while (lastIndex >= 0 && totalWidth > availableWidth) {
       const column = adjustedColumns[lastIndex];
 
-      const minWidth = column.minWidth || MIN_COLUMN_WIDTH;
+      const minWidth = column.minWidth ?? MIN_COLUMN_WIDTH;
       const overflowWidth = totalWidth - availableWidth;
 
       // eslint-disable-next-line deprecation/deprecation
@@ -1369,7 +1369,7 @@ export class DetailsListBase extends React.Component<IDetailsListProps, IDetails
         increment = spaceLeft;
       } else {
         const maxWidth = column.maxWidth;
-        const minWidth = column.minWidth || maxWidth || MIN_COLUMN_WIDTH;
+        const minWidth = column.minWidth ?? maxWidth ?? MIN_COLUMN_WIDTH;
         increment = maxWidth ? Math.min(spaceLeft, maxWidth - minWidth) : spaceLeft;
       }
 
@@ -1381,7 +1381,7 @@ export class DetailsListBase extends React.Component<IDetailsListProps, IDetails
   }
 
   private _onColumnResized = (resizingColumn: IColumn, newWidth: number, resizingColumnIndex: number): void => {
-    const newCalculatedWidth = Math.max(resizingColumn.minWidth || MIN_COLUMN_WIDTH, newWidth);
+    const newCalculatedWidth = Math.max(resizingColumn.minWidth ?? MIN_COLUMN_WIDTH, newWidth);
     if (this.props.onColumnResize) {
       this.props.onColumnResize(resizingColumn, newCalculatedWidth, resizingColumnIndex);
     }
